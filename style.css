@@ -132,10 +132,19 @@ h1 {
   margin-top: clamp(44px, 7vw, 80px);
 }
 
-.receipt-preview { position: relative; margin: 0; }
+.receipt-preview {
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 .receipt-preview-left { transform: rotate(-3deg); }
 .receipt-preview-center { margin-top: 18px; transform: rotate(1.6deg); }
 .receipt-preview-right { transform: rotate(4deg); }
+
+.receipt-preview-left:hover { transform: rotate(-2deg) translateY(-5px) scale(1.03); }
+.receipt-preview-center:hover { margin-top: 18px; transform: rotate(0deg) translateY(-5px) scale(1.03); }
+.receipt-preview-right:hover { transform: rotate(3deg) translateY(-5px) scale(1.03); }
 
 .receipt-preview canvas {
   display: block;
@@ -143,7 +152,18 @@ h1 {
   height: auto;
   background: var(--paper);
   box-shadow: 0 10px 22px rgb(45 58 69 / 16%);
+  transition: box-shadow 0.2s ease, filter 0.15s ease, opacity 0.15s ease;
 }
+
+.receipt-preview:hover canvas {
+  box-shadow: 0 16px 30px rgb(45 58 69 / 24%);
+}
+
+.receipt-preview canvas.regenerating {
+  opacity: 0.85;
+  filter: brightness(1.05) contrast(115%);
+}
+
 
 .tape {
   position: absolute;
