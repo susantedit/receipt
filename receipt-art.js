@@ -179,7 +179,59 @@ import { BARCODE_VALUE, drawBarcode } from "./barcode.js";
     }
   }
 
-  const styles = { starburst: starburst, ridges: ridges, weave: weave, orbit: orbit, route: route, halftone: halftone };
+  function automata(ctx, box, rand) {
+    const cols = 36;
+    const cellSize = box.w / cols;
+    const rows = Math.floor(box.h / cellSize);
+    let state = new Uint8Array(cols);
+    state[Math.floor(cols / 2)] = 1;
+    if (rand() > 0.5) state[Math.floor(cols / 3)] = 1;
+
+    const rule = rand() > 0.5 ? 30 : 110;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (state[c]) {
+          ctx.fillRect(box.x + c * cellSize, box.y + r * cellSize, cellSize - 0.4, cellSize - 0.4);
+        }
+      }
+      const next = new Uint8Array(cols);
+      for (let c = 0; c < cols; c++) {
+        const left = c > 0 ? state[c - 1] : 0;
+        const self = state[c];
+        const right = c < cols - 1 ? state[c + 1] : 0;
+        const pattern = (left << 2) | (self << 1) | right;
+        next[c] = (rule >> pattern) & 1;
+      }
+      state = next;
+    }
+  }
+
+  function fractal(ctx, box, rand) {
+    const cx = box.x + box.w / 2;
+    const cy = box.y + box.h / 2;
+    const size = Math.min(box.w, box.h) * 0.88;
+    ctx.lineWidth = 1.8;
+
+    function hilbert(x, y, xi, xj, yi, yj, n) {
+      if (n <= 0) {
+        ctx.lineTo(x + (xi + yi) / 2, y + (xj + yj) / 2);
+      } else {
+        hilbert(x, y, yi / 2, yj / 2, xi / 2, xj / 2, n - 1);
+        hilbert(x + xi / 2, y + xj / 2, xi / 2, xj / 2, yi / 2, yj / 2, n - 1);
+        hilbert(x + xi / 2 + yi / 2, y + xj / 2 + yj / 2, xi / 2, xj / 2, yi / 2, yj / 2, n - 1);
+        hilbert(x + xi / 2 + yi, y + xj / 2 + yj, -yi / 2, -yj / 2, -xi / 2, -xj / 2, n - 1);
+      }
+    }
+
+    ctx.beginPath();
+    const half = size / 2;
+    ctx.moveTo(cx - half, cy - half);
+    hilbert(cx - half, cy - half, size, 0, 0, size, 4);
+    ctx.stroke();
+  }
+
+  const styles = { starburst: starburst, ridges: ridges, weave: weave, orbit: orbit, route: route, halftone: halftone, automata: automata, fractal: fractal };
   const names = Object.keys(styles);
 
   function draw(ctx, w, h, opts) {
