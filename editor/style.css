@@ -85,7 +85,7 @@ code { color: var(--accent-dark); font-family: "Courier Prime", monospace; font-
 
 .workspace {
   position: relative;
-  width: min(384px, 88vw);
+  width: min(480px, 92vw);
   margin-top: clamp(18px, 3vw, 30px);
 }
 
